@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay 1 Rupee</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: pink;
+            font-family: Arial, sans-serif;
+        }
+        h1 { font-size: 24px; }
+        h2 { font-size: 20px; }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pay 1 Rupee to See How Many Rupees in This Account</h1>
+        
+        <!-- Razorpay Payment Button -->
+        <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js"
+                data-payment_button_id="pl_Q1VPKynGzRQl5H" 
+                async>
+            </script>
+        </form>
+
+        <h2>Balance: <span id="balance">🔒</span></h2>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const balanceElement = document.getElementById("balance");
+            
+            // Initially lock the balance
+            balanceElement.innerText = "🔒";
+
+            // Function to fetch updated balance
+            function fetchBalance() {
+                fetch("https://your-backend-url.com/get-balance") // Replace with deployed backend URL
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            balanceElement.innerText = `₹${data.balance}`;
+                        }
+                    })
+                    .catch(error => console.error("Error fetching balance:", error));
+            }
+
+            // Detect payment success (Razorpay webhook triggers this)
+            function handlePaymentSuccess() {
+                fetchBalance(); // Show updated balance
+            }
+
+            // Listen for successful payment from Razorpay
+            window.addEventListener("razorpay_payment_success", handlePaymentSuccess);
+        });
+    </script>
+</body>
+</html>
